@@ -33,17 +33,6 @@ def comprobacion_individual(train_df: pd.DataFrame, test_df: pd.DataFrame):
         "hgb_train": resultado_hgb_train, "hgb_test": resultado_hgb_test,
     }
 
-# LÓGICA DE ENSAMBLES (SOFT VOTING)
-def ejecutar_soft_voting(resultados: dict, test_df: pd.DataFrame):
-    resultado_soft_voting = test_soft_voting(
-        resultados["rf_test"]["model"],
-        resultados["hgb_test"]["model"],
-        resultados["lr_test"]["model"],
-        test_df
-    )
-    print("\nSOFT VOTING RF + HGB + LR")
-    print("SOFT VOTING TEST:", resultado_soft_voting["metrics"])
-    return resultado_soft_voting
 
 # LÓGICA DE ENSAMBLES (STACKING)
 def construir_meta_datasets_stacking(resultados_modelos: dict, train_df: pd.DataFrame, test_df: pd.DataFrame):
@@ -74,9 +63,28 @@ def ejecutar_stacking(meta_train, meta_test, y_meta_train, y_meta_test):
     resultado_meta_test = test_meta_rf(resultado_meta_train["model"], meta_test, y_meta_test)
 
     print("\nSTACKING META-MODEL (RF)")
-    print("META TEST:", resultado_meta_test["metrics"])
+    print("STACKING TEST:", resultado_meta_test["metrics"])
     print(resultado_meta_test["classification_report"])
+    print("Confusion Matrix:")
+    print(np.array(resultado_meta_test["confusion_matrix"]))
     return resultado_meta_test
+
+
+# LÓGICA DE ENSAMBLES (SOFT VOTING)
+def ejecutar_soft_voting(resultados: dict, test_df: pd.DataFrame):
+    resultado_soft_voting = test_soft_voting(
+        resultados["rf_test"]["model"],
+        resultados["hgb_test"]["model"],
+        resultados["lr_test"]["model"],
+        test_df
+    )
+    print("\nSOFT VOTING RF + HGB + LR")
+    print("SOFT VOTING TEST:", resultado_soft_voting["metrics"])
+    print(resultado_soft_voting["classification_report"])
+    print("Confusion Matrix:")
+    print(np.array(resultado_soft_voting["confusion_matrix"]))
+    return resultado_soft_voting
+
 
 # --- MAIN: ORQUESTACIÓN ---
 

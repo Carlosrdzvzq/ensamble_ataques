@@ -22,7 +22,7 @@ def _crear_modelo(random_state: int = 42):
                 "classifier",
                 HistGradientBoostingClassifier(
                     random_state=random_state,
-                    max_iter=200,
+                    max_iter=1000,
                     learning_rate=0.1,
                 ),
             ),
