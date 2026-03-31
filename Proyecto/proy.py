@@ -1,12 +1,28 @@
 import pandas as pd  # type: ignore
 import numpy as np   # type: ignore
-from Modelos.logistic_regression_model import train as train_lr, test as test_lr
-from Modelos.random_forest_model import train as train_rf, test as test_rf
-from Modelos.hist_gradient_boosting_model import train as train_hgb, test as test_hgb
+from Modelos.logistic_regression_model import (
+    train as train_lr,
+    test as test_lr,
+    mostrar_top_features_por_clase as detalleLR,
+)
+
+from Modelos.random_forest_model import (
+    train as train_rf,
+    test as test_rf,
+    mostrar_importancia_random_forest as detalleRM,
+)
+
+from Modelos.hist_gradient_boosting_model import (
+    train as train_hgb,
+    test as test_hgb,
+    mostrar_importancia_hgb as detalleHGB,
+)
+
 # from Modelos.stacking_logistic_regression_model import train as train_meta, test as test_meta
 from Modelos.stacking_random_forest_model import train as train_meta_rf, test as test_meta_rf
 from Modelos.soft_voting_model import test_soft_voting
 
+IMPRIMIR_DETALLE = False
 
 def imprimir_metricas_cv(nombre, metrics):
     print(f"{nombre} CV:")
@@ -29,8 +45,11 @@ def comprobacion_individual(train_df: pd.DataFrame, test_df: pd.DataFrame):
     resultado_hgb_test = test_hgb(resultado_hgb_train["model"], test_df)
 
     
-    
-    
+    if IMPRIMIR_DETALLE:
+        detalleLR(resultado_lr_train, top_n=10)
+        detalleRM(resultado_rf_train)
+        detalleHGB(resultado_hgb_train, train_df, top_n=15)
+
 
     print("Resultados individuales con 5-fold en train y test\n")
     imprimir_metricas_cv("LR", resultado_lr_train["metrics"])

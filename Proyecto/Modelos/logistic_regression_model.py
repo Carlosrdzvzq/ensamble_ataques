@@ -7,7 +7,6 @@ from sklearn.preprocessing import StandardScaler  # type: ignore
 from sklearn.model_selection import StratifiedKFold  # type: ignore
 from sklearn.metrics import accuracy_score, f1_score, classification_report, confusion_matrix  # type: ignore
 
-
 def _separar_x_y(df: pd.DataFrame, target_col: str = "Label"):
     x = df.drop(columns=[target_col]).copy()
     y = df[target_col].copy()
@@ -125,3 +124,21 @@ def test(model, df: pd.DataFrame, target_col: str = "Label"):
     }
 
     return result
+
+def mostrar_top_features_por_clase(resultado_lr_train, top_n=10):
+    pipeline = resultado_lr_train["model"]
+    clf = pipeline.named_steps["classifier"]
+    features = resultado_lr_train["feature_columns"]
+    classes = clf.classes_
+    coef = clf.coef_
+
+    for i, clase in enumerate(classes):
+        df = pd.DataFrame({
+            "feature": features,
+            "coef": coef[i]
+        })
+        df["abs_coef"] = df["coef"].abs()
+        df = df.sort_values("abs_coef", ascending=False)
+
+        print(f"\nClase {clase} - Top {top_n} features más influyentes")
+        print(df.head(top_n)[["feature", "coef"]].to_string(index=False))

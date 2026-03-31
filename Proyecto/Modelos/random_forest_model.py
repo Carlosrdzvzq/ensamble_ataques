@@ -5,7 +5,7 @@ from sklearn.pipeline import Pipeline  # type: ignore
 from sklearn.impute import SimpleImputer  # type: ignore
 from sklearn.model_selection import StratifiedKFold  # type: ignore
 from sklearn.metrics import accuracy_score, f1_score, classification_report, confusion_matrix  # type: ignore
-
+from sklearn.tree import export_text  # type: ignore
 
 def _separar_x_y(df: pd.DataFrame, target_col: str = "Label"):
     x = df.drop(columns=[target_col]).copy()
@@ -124,3 +124,19 @@ def test(model, df: pd.DataFrame, target_col: str = "Label"):
     }
 
     return result
+    
+
+def mostrar_importancia_random_forest(resultado_rf_train, top_n=15):
+    pipeline = resultado_rf_train["model"]
+    clf = pipeline.named_steps["classifier"]
+    features = resultado_rf_train["feature_columns"]
+
+    importancias = clf.feature_importances_
+
+    df = pd.DataFrame({
+        "feature": features,
+        "importance": importancias
+    }).sort_values(by="importance", ascending=False)
+
+    print("\nTop variables más importantes (Random Forest):")
+    print(df.head(top_n).to_string(index=False))

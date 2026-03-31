@@ -5,6 +5,7 @@ from sklearn.pipeline import Pipeline  # type: ignore
 from sklearn.impute import SimpleImputer  # type: ignore
 from sklearn.model_selection import StratifiedKFold  # type: ignore
 from sklearn.metrics import accuracy_score, f1_score, classification_report, confusion_matrix  # type: ignore
+from sklearn.inspection import permutation_importance  # type: ignore
 
 
 def _separar_x_y(df: pd.DataFrame, target_col: str = "Label"):
@@ -124,3 +125,38 @@ def test(model, df: pd.DataFrame, target_col: str = "Label"):
     }
 
     return result
+
+
+def mostrar_importancia_hgb(
+    resultado_hgb_train,
+    df: pd.DataFrame,
+    target_col: str = "Label",
+    top_n: int = 15,
+    n_repeats: int = 5,
+    random_state: int = 42,
+):
+    x = df.drop(columns=[target_col]).copy()
+    y = df[target_col].copy()
+
+    pipeline = resultado_hgb_train["model"]
+
+    resultado_perm = permutation_importance(
+        pipeline,
+        x,
+        y,
+        n_repeats=n_repeats,
+        random_state=random_state,
+        scoring="f1_macro",
+        n_jobs=-1,
+    )
+
+    df_importancia = pd.DataFrame({
+        "feature": x.columns,
+        "importance_mean": resultado_perm.importances_mean,
+        "importance_std": resultado_perm.importances_std,
+    }).sort_values(by="importance_mean", ascending=False)
+
+    print("\nTop variables más importantes (HGB - Permutation Importance):")
+    print(df_importancia.head(top_n).to_string(index=False))
+
+    return df_importancia
