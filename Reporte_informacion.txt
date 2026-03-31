@@ -1,0 +1,90 @@
+Información útil para el reporte: 
+
+En el paper de InSDN reconoce como limitación: 
+hay high-class imbalance, y una de las soluciones que mencionan es justamente 
+fusionar clases minoritarias que compartan características para reducir el desbalance
+
+
+Resultados obtenidos de manera individual
+LR CV: {'accuracy': 0.8244141995229409, 'macro_f1': 0.7843686371849712, 'weighted_f1': 0.8146923288889184}
+LR TEST: {'accuracy': 0.9176589952406954, 'macro_f1': 0.6798851281334642, 'weighted_f1': 0.9190948168173971}
+RF CV: {'accuracy': 0.8999859688508488, 'macro_f1': 0.878082346116918, 'weighted_f1': 0.8990301010657259}
+RF TEST: {'accuracy': 0.9480620064980579, 'macro_f1': 0.7273847016360173, 'weighted_f1': 0.9368261732921952}
+HGB CV: {'accuracy': 0.9200224498386419, 'macro_f1': 0.902719524806488, 'weighted_f1': 0.9190121235862755}
+HGB TEST: {'accuracy': 0.9475508362667534, 'macro_f1': 0.7327524608768814, 'weighted_f1': 0.9426448269818312}
+
+
+Se eligió stacking como estrategia de ensamble porque los clasificadores base utilizados son heterogéneos 
+y presentan comportamientos complementarios. Logistic Regression aporta una frontera lineal simple y estable, 
+mientras que Random Forest e HistGradientBoosting capturan relaciones no lineales complejas. 
+Dado que los resultados individuales muestran que HGB y RF superan a LR, pero LR aún puede capturar patrones 
+distintos, stacking permite aprender cómo combinar sus salidas en lugar de asignarles el mismo peso, como 
+ocurriría en una votación simple. Por ello, stacking resulta más adecuado para explotar la complementariedad entre 
+modelos y mejorar la capacidad de generalización del sistema.
+Además, boosting no se eligió como técnica principal del ensamble porque uno de los clasificadores base ya pertenece 
+a esa familia, y el objetivo de esta etapa es combinar clasificadores base previamente diseñados, no reemplazarlos 
+por un único modelo boosting.
+
+
+
+Implementación del ensamble:
+Cómo implementarlo
+La forma más limpia es:
+Paso 1
+Entrenas tus tres clasificadores base con train_df
+Paso 2
+Cada modelo genera predicciones sobre el mismo train_df y sobre test_df
+Paso 3
+Construyes un nuevo dataset con esas predicciones como entradas
+Por ejemplo, si tienes 3 modelos, el meta-dataset puede verse así:
+pred_lr
+pred_rf
+pred_hgb
+y la variable objetivo sigue siendo Label
+Paso 4
+Entrenas un meta-modelo con esas predicciones
+recomendable: LogisticRegression
+Paso 5
+En test:
+obtienes las predicciones de LR, RF y HGB
+esas tres predicciones alimentan al meta-modelo
+el meta-modelo da la predicción final
+
+
+
+
+Meejores resultados obtenidos: -----------------------------------------------------------------------------------------
+LR CV: {'accuracy': 0.8243019503297319, 'macro_f1': 0.7841336543286602, 'weighted_f1': 0.814528184856165}
+LR TEST: {'accuracy': 0.9176938477564661, 'macro_f1': 0.6801966964726216, 'weighted_f1': 0.919111037779261}
+RF CV: {'accuracy': 0.8999859688508488, 'macro_f1': 0.878082346116918, 'weighted_f1': 0.8990301010657259}
+RF TEST: {'accuracy': 0.9480620064980579, 'macro_f1': 0.7273847016360173, 'weighted_f1': 0.9368261732921952}
+HGB CV: {'accuracy': 0.9200224498386419, 'macro_f1': 0.902719524806488, 'weighted_f1': 0.9190121235862755}
+HGB TEST: {'accuracy': 0.9475508362667534, 'macro_f1': 0.7327524608768814, 'weighted_f1': 0.9426448269818312}
+
+SOFT VOTING RF + HGB + LR
+SOFT VOTING TEST: {'accuracy': 0.9507843752299298, 'macro_f1': 0.7475780066611191, 'weighted_f1': 0.945678417246869}
+
+STACKING META-MODEL
+META TEST: {'accuracy': 0.9401543579198469, 'macro_f1': 0.5719006213000376, 'weighted_f1': 0.9191324399526718}
+              precision    recall  f1-score   support
+
+           0       0.37      0.00      0.01     10444
+           1       0.99      1.00      1.00     51695
+           2       1.00      1.00      1.00     48616
+           3       0.00      0.00      0.00      1110
+           4       1.00      1.00      1.00     21584
+           5       0.00      0.00      0.00      1440
+           6       0.47      1.00      0.64      6212
+           7       1.00      0.99      1.00     36421
+           8       1.00      0.99      0.99     39213
+           9       0.00      0.00      0.00       786
+          10       0.00      0.00      0.00       533
+          11       0.84      1.00      0.91     29757
+          12       0.83      0.96      0.89     10420
+
+    accuracy                           0.94    258231
+   macro avg       0.58      0.61      0.57    258231
+weighted avg       0.92      0.94      0.92    258231
+
+PS C:\Users\ZeroV\OneDrive\Escritorio\Proyecto programacion\Proyecto> 
+

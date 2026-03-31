@@ -1,0 +1,15 @@
+{
+    "Another_attack": 0,
+    "Benign": 1,
+    "DDoS": 2,
+    "DNS": 3,
+    "DoS": 4,
+    "LDAP": 5,
+    "MSSQL": 6,
+    "NTP": 7,
+    "Probe": 8,
+    "SNMP": 9,
+    "Syn": 10,
+    "TFTP": 11,
+    "UDP": 12
+}

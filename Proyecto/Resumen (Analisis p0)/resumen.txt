@@ -1,0 +1,30 @@
+TABLA RESUMEN - CIC-DDoS2019
+   NombreArchivo  CantidadRegistros                                                    Ataques         Benign  TotalAtaques %Ataques
+     DNS-testing               2011                                   DrDoS_DNS(1110 - 55.20%)   901 (44.80%)          1110   55.20%
+    DNS-training               4692                                   DrDoS_DNS(2559 - 54.54%)  2133 (45.46%)          2559   54.54%
+    LDAP-testing               2831                                  DrDoS_LDAP(1440 - 50.87%)  1391 (49.13%)          1440   50.87%
+   LDAP-training               6715                  LDAP(1884 - 28.06%), NetBIOS(246 - 3.66%)  4585 (68.28%)          2130   31.72%
+   MSSQL-testing               8083                                 DrDoS_MSSQL(6212 - 76.85%)  1871 (23.15%)          6212   76.85%
+  MSSQL-training              10974                     MSSQL(8378 - 76.34%), LDAP(22 - 0.20%)  2574 (23.46%)          8400   76.54%
+ NetBIOS-testing               2225                                DrDoS_NetBIOS(598 - 26.88%)  1627 (73.12%)           598   26.88%
+NetBIOS-training               1631                                      NetBIOS(398 - 24.40%)  1233 (75.60%)           398   24.40%
+     NTP-testing              40403                                  DrDoS_NTP(36421 - 90.14%)   3982 (9.86%)         36421   90.14%
+    NTP-training              94271                                  DrDoS_NTP(84947 - 90.11%)   9324 (9.89%)         84947   90.11%
+ Portmap-testing               1532                                      Portmap(190 - 12.40%)  1342 (87.60%)           190   12.40%
+Portmap-training               3573                                      Portmap(495 - 13.85%)  3078 (86.15%)           495   13.85%
+    SNMP-testing               1206                                   DrDoS_SNMP(786 - 65.17%)   420 (34.83%)           786   65.17%
+   SNMP-training               2812                                  DrDoS_SNMP(1931 - 68.67%)   881 (31.33%)          1931   68.67%
+     Syn-testing                907                                          Syn(533 - 58.77%)   374 (41.23%)           533   58.77%
+    Syn-training              70336                                        Syn(43302 - 61.56%) 27034 (38.44%)         43302   61.56%
+    TFTP-testing              36550                                       TFTP(29757 - 81.41%)  6793 (18.59%)         29757   81.41%
+   TFTP-training              85283                                       TFTP(69160 - 81.09%) 16123 (18.91%)         69160   81.09%
+     UDP-testing              12462                                  DrDoS_UDP(10420 - 83.61%)  2042 (16.39%)         10420   83.61%
+    UDP-training              17770                    UDP(14792 - 83.24%), MSSQL(145 - 0.82%)  2833 (15.94%)         14937   84.06%
+  UDPLag-testing              12465                UDP-lag(8872 - 71.18%), WebDDoS(51 - 0.41%)  3542 (28.42%)          8923   71.58%
+ UDPLag-training              12639 Syn(5538 - 43.82%), UDP(3298 - 26.09%), UDPLag(55 - 0.44%)  3748 (29.65%)          8891   70.35%
+
+
+NombreArchivo,CantidadRegistros,Ataques,Benign,TotalAtaques,%Ataques
+metasploitable-2,136743,"DDoS(73529 - 53.77%), Probe(61757 - 45.16%), DoS(1145 - 0.84%), BFA(295 - 0.22%), U2R(17 - 0.01%)",0 (0%),136743,100%
+Normal_data,68424,-,68424 (100%),0,0%
+OVS,138722,"DoS(52471 - 37.82%), DDoS(48413 - 34.90%), Probe(36372 - 26.22%), BFA(1110 - 0.80%), Web-Attack(192 - 0.14%), BOTNET(164 - 0.12%)",0 (0%),138722,100%

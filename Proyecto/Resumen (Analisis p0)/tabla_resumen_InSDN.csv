@@ -1,0 +1,4 @@
+﻿NombreArchivo,CantidadRegistros,Ataques,Benign,TotalAtaques,%Ataques
+metasploitable-2,136743,"DDoS(73529 - 53.77%), Probe(61757 - 45.16%), DoS(1145 - 0.84%), BFA(295 - 0.22%), U2R(17 - 0.01%)",0 (0%),136743,100%
+Normal_data,68424,-,68424 (100%),0,0%
+OVS,138722,"DoS(52471 - 37.82%), DDoS(48413 - 34.90%), Probe(36372 - 26.22%), BFA(1110 - 0.80%), Web-Attack(192 - 0.14%), BOTNET(164 - 0.12%)",0 (0%),138722,100%
