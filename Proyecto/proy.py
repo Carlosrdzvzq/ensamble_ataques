@@ -7,6 +7,15 @@ from Modelos.hist_gradient_boosting_model import train as train_hgb, test as tes
 from Modelos.stacking_random_forest_model import train as train_meta_rf, test as test_meta_rf
 from Modelos.soft_voting_model import test_soft_voting
 
+
+def imprimir_metricas_cv(nombre, metrics):
+    print(f"{nombre} CV:")
+    print(f"  Accuracy:   {metrics['accuracy_mean']:.4f} ± {metrics['accuracy_std']:.4f}")
+    print(f"  Macro F1:   {metrics['macro_f1_mean']:.4f} ± {metrics['macro_f1_std']:.4f}")
+    print(f"  Weighted F1:{metrics['weighted_f1_mean']:.4f} ± {metrics['weighted_f1_std']:.4f}")
+    print()
+
+
 # ENTRENAMIENTO Y EVALUACIÓN INDIVIDUAL
 def comprobacion_individual(train_df: pd.DataFrame, test_df: pd.DataFrame):
 
@@ -19,12 +28,16 @@ def comprobacion_individual(train_df: pd.DataFrame, test_df: pd.DataFrame):
     resultado_hgb_train = train_hgb(train_df)
     resultado_hgb_test = test_hgb(resultado_hgb_train["model"], test_df)
 
+    
+    
+    
+
     print("Resultados individuales con 5-fold en train y test\n")
-    print("LR CV:", resultado_lr_train["metrics"])
+    imprimir_metricas_cv("LR", resultado_lr_train["metrics"])
     print("LR TEST:", resultado_lr_test["metrics"])
-    print("RF CV:", resultado_rf_train["metrics"])
+    imprimir_metricas_cv("RF", resultado_rf_train["metrics"])
     print("RF TEST:", resultado_rf_test["metrics"])
-    print("HGB CV:", resultado_hgb_train["metrics"])
+    imprimir_metricas_cv("HGB", resultado_hgb_train["metrics"])
     print("HGB TEST:", resultado_hgb_test["metrics"])
 
     return {

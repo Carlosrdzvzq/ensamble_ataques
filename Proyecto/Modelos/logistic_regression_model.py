@@ -78,9 +78,14 @@ def train(
     final_model.fit(x, y)
 
     metrics = {
-        "accuracy": float(np.mean(accuracies)),
-        "macro_f1": float(np.mean(macro_f1s)),
-        "weighted_f1": float(np.mean(weighted_f1s)),
+        "accuracy_mean": float(np.mean(accuracies)),
+        "accuracy_std": float(np.std(accuracies)),
+
+        "macro_f1_mean": float(np.mean(macro_f1s)),
+        "macro_f1_std": float(np.std(macro_f1s)),
+
+        "weighted_f1_mean": float(np.mean(weighted_f1s)),
+        "weighted_f1_std": float(np.std(weighted_f1s)),
     }
 
     result = {
