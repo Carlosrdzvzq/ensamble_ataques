@@ -22,9 +22,11 @@ def _crear_modelo(random_state: int = 42):
             (
                 "classifier",
                 RandomForestClassifier(
-                    n_estimators=100,
-                    max_depth=5,
-                    min_samples_leaf=5,
+                    n_estimators=300,
+                    max_depth=None,
+                    min_samples_leaf=1,
+                    min_samples_split=2,
+                    class_weight="balanced_subsample",
                     random_state=random_state,
                     n_jobs=-1,
                 ),

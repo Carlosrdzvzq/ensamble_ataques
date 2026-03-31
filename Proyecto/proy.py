@@ -3,8 +3,8 @@ import numpy as np   # type: ignore
 from Modelos.logistic_regression_model import train as train_lr, test as test_lr
 from Modelos.random_forest_model import train as train_rf, test as test_rf
 from Modelos.hist_gradient_boosting_model import train as train_hgb, test as test_hgb
-from Modelos.meta_model import train as train_meta, test as test_meta
-from Modelos.meta_model_rf import train as train_meta_rf, test as test_meta_rf
+# from Modelos.stacking_logistic_regression_model import train as train_meta, test as test_meta
+from Modelos.stacking_random_forest_model import train as train_meta_rf, test as test_meta_rf
 from Modelos.soft_voting_model import test_soft_voting
 
 # ENTRENAMIENTO Y EVALUACIÓN INDIVIDUAL
@@ -36,26 +36,58 @@ def comprobacion_individual(train_df: pd.DataFrame, test_df: pd.DataFrame):
 
 # LÓGICA DE ENSAMBLES (STACKING)
 def construir_meta_datasets_stacking(resultados_modelos: dict, train_df: pd.DataFrame, test_df: pd.DataFrame):
-    # Nota: Se usan las OOF (Out-of-Fold) para el Meta-Train para evitar Overfitting
-    classes = resultados_modelos["lr_train"]["classes"]
+    clases_lr = list(resultados_modelos["lr_train"]["classes"])
+    clases_rf = list(resultados_modelos["rf_train"]["classes"])
+    clases_hgb = list(resultados_modelos["hgb_train"]["classes"])
+
+    if clases_lr != clases_rf or clases_lr != clases_hgb:
+        raise ValueError(
+            f"El orden de clases no coincide:\n"
+            f"LR: {clases_lr}\nRF: {clases_rf}\nHGB: {clases_hgb}"
+        )
+
+    classes = clases_lr
     meta_train_dict = {}
     meta_test_dict = {}
 
-    for i, clase in enumerate(classes):
-        # Probabilidades OOF para entrenamiento
-        meta_train_dict[f"lr_prob_{clase}"] = resultados_modelos["lr_train"]["oof_proba_train"][:, i]
-        meta_train_dict[f"rf_prob_{clase}"] = resultados_modelos["rf_train"]["oof_proba_train"][:, i]
-        meta_train_dict[f"hgb_prob_{clase}"] = resultados_modelos["hgb_train"]["oof_proba_train"][:, i]
+    lr_oof = resultados_modelos["lr_train"]["oof_proba_train"]
+    rf_oof = resultados_modelos["rf_train"]["oof_proba_train"]
+    hgb_oof = resultados_modelos["hgb_train"]["oof_proba_train"]
 
-        # Probabilidades reales para test
-        meta_test_dict[f"lr_prob_{clase}"] = resultados_modelos["lr_test"]["proba_test"][:, i]
-        meta_test_dict[f"rf_prob_{clase}"] = resultados_modelos["rf_test"]["proba_test"][:, i]
-        meta_test_dict[f"hgb_prob_{clase}"] = resultados_modelos["hgb_test"]["proba_test"][:, i]
+    lr_test = resultados_modelos["lr_test"]["proba_test"]
+    rf_test = resultados_modelos["rf_test"]["proba_test"]
+    hgb_test = resultados_modelos["hgb_test"]["proba_test"]
+
+    for i, clase in enumerate(classes):
+        meta_train_dict[f"lr_prob_{clase}"] = lr_oof[:, i]
+        meta_train_dict[f"rf_prob_{clase}"] = rf_oof[:, i]
+        meta_train_dict[f"hgb_prob_{clase}"] = hgb_oof[:, i]
+
+        meta_test_dict[f"lr_prob_{clase}"] = lr_test[:, i]
+        meta_test_dict[f"rf_prob_{clase}"] = rf_test[:, i]
+        meta_test_dict[f"hgb_prob_{clase}"] = hgb_test[:, i]
+
+    meta_train_dict["lr_conf_max"] = lr_oof.max(axis=1)
+    meta_train_dict["rf_conf_max"] = rf_oof.max(axis=1)
+    meta_train_dict["hgb_conf_max"] = hgb_oof.max(axis=1)
+
+    meta_test_dict["lr_conf_max"] = lr_test.max(axis=1)
+    meta_test_dict["rf_conf_max"] = rf_test.max(axis=1)
+    meta_test_dict["hgb_conf_max"] = hgb_test.max(axis=1)
+
+    meta_train_dict["lr_pred_class"] = lr_oof.argmax(axis=1)
+    meta_train_dict["rf_pred_class"] = rf_oof.argmax(axis=1)
+    meta_train_dict["hgb_pred_class"] = hgb_oof.argmax(axis=1)
+
+    meta_test_dict["lr_pred_class"] = lr_test.argmax(axis=1)
+    meta_test_dict["rf_pred_class"] = rf_test.argmax(axis=1)
+    meta_test_dict["hgb_pred_class"] = hgb_test.argmax(axis=1)
 
     meta_train = pd.DataFrame(meta_train_dict)
     meta_test = pd.DataFrame(meta_test_dict)
-    
+
     return meta_train, meta_test, train_df["Label"].copy(), test_df["Label"].copy()
+
 
 def ejecutar_stacking(meta_train, meta_test, y_meta_train, y_meta_test):
     # Usando el Meta-Modelo basado en Random Forest (Experimento B)
